@@ -13,10 +13,20 @@ const authMiddleware =
 const roleMiddleware =
   require('../middleware/roleMiddleware')
 
+const validate =
+  require('../middleware/validateMiddleware')
+
+const {
+  fireSchema
+} = require(
+  '../validations/emergencyValidation'
+)
+
 // USER + ADMIN
 router.post(
   '/trigger',
   authMiddleware,
+  validate(fireSchema),
   triggerFireAlert
 )
 

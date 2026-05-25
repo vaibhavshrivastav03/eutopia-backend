@@ -1,7 +1,13 @@
 const supabase = require('../config/supabase')
-const {sendFireSMS} = require('../services/smsService')
 
-const triggerFireAlert = async (req, res) => {
+const {
+  sendFireSMS
+} = require('../services/smsService')
+
+const triggerFireAlert = async (
+  req,
+  res
+) => {
 
   try {
 
@@ -12,24 +18,29 @@ const triggerFireAlert = async (req, res) => {
     } = req.body
 
     // FIRE ALERT ENTRY
-    const { data: fireData, error: fireError } =
-      await supabase
-        .from('fire_alerts')
-        .insert([
-          {
-            user_id,
-            occupancy,
-            address,
-            dispatch_status: 'DISPATCHED'
-          }
-        ])
-        .select()
+    const {
+      data: fireData,
+      error: fireError
+    } = await supabase
+      .from('fire_alerts')
+      .insert([
+        {
+          user_id,
+          occupancy,
+          address,
+          dispatch_status:
+            'DISPATCHED'
+        }
+      ])
+      .select()
 
     if (fireError) {
+
       return res.status(400).json({
         success: false,
         error: fireError.message
       })
+
     }
 
     // EMERGENCY LOG ENTRY
@@ -40,15 +51,26 @@ const triggerFireAlert = async (req, res) => {
           user_id,
           emergency_type: 'FIRE',
           status: 'ACTIVE',
-          notes: 'Fire emergency triggered'
+          notes:
+            'Fire emergency triggered'
         }
       ])
 
-    await sendFireSMS(user_id) 
-    
+    // SEND SMS
+    await sendFireSMS(user_id)
+
+    // REALTIME SOCKET EVENT
+    const io = req.app.get('io')
+
+    io.emit(
+      'fire_alert',
+      fireData
+    )
+
     res.status(201).json({
       success: true,
-      message: 'Fire emergency triggered',
+      message:
+        'Fire emergency triggered',
       data: fireData
     })
 
@@ -63,44 +85,50 @@ const triggerFireAlert = async (req, res) => {
 
 }
 
-const getAllFireAlerts = async (req, res) => {
+const getAllFireAlerts =
+  async (req, res) => {
 
-  try {
+    try {
 
-    const { data, error } = await supabase
-      .from('fire_alerts')
-      .select(`
-        *,
-        users (
-          *
-        )
-      `)
-      .order('created_at', {
-        ascending: false
+      const {
+        data,
+        error
+      } = await supabase
+        .from('fire_alerts')
+        .select(`
+          *,
+          users (
+            *
+          )
+        `)
+        .order('created_at', {
+          ascending: false
+        })
+
+      if (error) {
+
+        return res.status(400).json({
+          success: false,
+          error: error.message
+        })
+
+      }
+
+      res.json({
+        success: true,
+        data
       })
 
-    if (error) {
-      return res.status(400).json({
+    } catch (err) {
+
+      res.status(500).json({
         success: false,
-        error: error.message
+        error: err.message
       })
+
     }
 
-    res.json({
-      success: true,
-      data
-    })
-
-  } catch (err) {
-
-    res.status(500).json({
-      success: false,
-      error: err.message
-    })
-
   }
-
-}
 
 module.exports = {
   triggerFireAlert,
