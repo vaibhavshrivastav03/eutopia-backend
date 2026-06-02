@@ -12,7 +12,8 @@ const createUser = async (req, res) => {
       allergies,
       medical_notes,
       address,
-      occupancy_count
+      occupancy_count,
+      preferred_language
     } = req.body
 
     const { data, error } = await supabase
@@ -26,16 +27,21 @@ const createUser = async (req, res) => {
           allergies,
           medical_notes,
           address,
-          occupancy_count
+          occupancy_count,
+          preferred_language:
+            preferred_language ||
+            'English'
         }
       ])
       .select()
 
     if (error) {
+
       return res.status(400).json({
         success: false,
         error: error.message
       })
+
     }
 
     res.status(201).json({

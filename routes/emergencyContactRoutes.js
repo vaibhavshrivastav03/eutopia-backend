@@ -13,6 +13,9 @@ const authMiddleware =
 const roleMiddleware =
   require('../middleware/roleMiddleware')
 
+const ownershipMiddleware =
+  require('../middleware/ownershipMiddleware')
+
 // USER + ADMIN
 router.post(
   '/create',
@@ -29,6 +32,7 @@ router.get(
     'admin',
     'hospital'
   ),
+  ownershipMiddleware,
   getUserEmergencyContacts
 )
 

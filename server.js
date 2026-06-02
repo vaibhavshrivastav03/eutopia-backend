@@ -51,6 +51,21 @@ const dashboardRoutes =
 const hospitalRoutes =
   require('./routes/hospitalRoutes')
 
+const medicalRecordRoutes =
+  require(
+    './routes/medicalRecordRoutes'
+  )
+
+const hospitalRecordRoutes =
+  require(
+    './routes/hospitalRecordRoutes'
+  )
+
+const hospitalIdentificationRoutes =
+  require(
+    './routes/hospitalIdentificationRoutes'
+  )
+
 // EXPRESS APP
 const app = express()
 
@@ -122,6 +137,19 @@ app.use(
   hospitalRoutes
 )
 
+app.use(
+  '/api/medical-records',
+  medicalRecordRoutes
+)
+app.use(
+  '/api/hospital-records',
+  hospitalRecordRoutes
+)
+
+app.use(
+  '/api/hospital-identification',
+  hospitalIdentificationRoutes
+)
 // ROOT
 app.get('/', (req, res) => {
 
