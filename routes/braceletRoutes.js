@@ -5,7 +5,9 @@ const router = express.Router()
 const {
   assignBracelet,
   scanBracelet,
-  switchBraceletUser
+  switchBraceletUser,
+  getUserBracelet,
+  assignUserBracelet
 } = require('../controllers/braceletController')
 
 const authMiddleware =
@@ -13,6 +15,13 @@ const authMiddleware =
 
 const roleMiddleware =
   require('../middleware/roleMiddleware')
+
+
+router.get(
+  '/user/:userId',
+  authMiddleware,
+  getUserBracelet
+) 
 
 // ADMIN ONLY
 router.post(
@@ -27,6 +36,12 @@ router.get(
   '/scan/:uid',
   scanBracelet
 )
+
+router.post(
+  '/assign-user-bracelet',
+  authMiddleware,
+  assignUserBracelet
+);
 
 // ADMIN ONLY
 router.put(

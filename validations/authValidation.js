@@ -13,6 +13,10 @@ const registerSchema =
         .email()
         .required(),
 
+    phone:
+      Joi.string()
+        .required(),
+
     password:
       Joi.string()
         .min(6)

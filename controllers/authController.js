@@ -11,7 +11,9 @@ const registerUser = async (req, res) => {
     const {
       full_name,
       email,
-      password
+      phone,
+      password,
+      role = 'user'
     } = req.body
 
     // CHECK EXISTING USER
@@ -40,6 +42,8 @@ const registerUser = async (req, res) => {
         {
           full_name,
           email,
+          phone,
+          role,
           password: hashedPassword
         }
       ])

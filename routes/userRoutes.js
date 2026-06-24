@@ -3,21 +3,34 @@ const express = require('express')
 const router = express.Router()
 
 const {
-  createUser
-} = require('../controllers/userController')
+  createUser,
+  updateOnboardingProfile,
+  saveEmergencyContacts
+} = require('../controllers/userController');
 
 const authMiddleware =
-  require('../middleware/authMiddleware')
+  require('../middleware/authMiddleware');
 
 const roleMiddleware =
-  require('../middleware/roleMiddleware')
+  require('../middleware/roleMiddleware');
 
-// ADMIN ONLY
 router.post(
   '/create',
   authMiddleware,
   roleMiddleware('admin'),
   createUser
-)
+);
+
+router.put(
+  '/onboarding-profile',
+  authMiddleware,
+  updateOnboardingProfile
+);
+
+router.post(
+  '/emergency-contacts',
+  authMiddleware,
+  saveEmergencyContacts
+);
 
 module.exports = router
