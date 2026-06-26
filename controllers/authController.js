@@ -5,73 +5,95 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
 const registerUser = async (req, res) => {
-
   try {
-
     const {
       full_name,
       email,
       phone,
+      age,
+      blood_group,
+      address,
       password,
-      role = 'user'
-    } = req.body
+      role = "user",
+    } = req.body;
 
     // CHECK EXISTING USER
-    const { data: existingUser } =
-      await supabase
-        .from('users')
-        .select('*')
-        .eq('email', email)
-        .single()
+    const {
+      data: existingUser,
+      error: existingUserError,
+    } = await supabase
+      .from("users")
+      .select("id")
+      .eq("email", email)
+      .maybeSingle();
 
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        error: 'Email already exists'
-      })
+        error: "Email already exists",
+      });
+    }
+
+    if (existingUserError) {
+      return res.status(400).json({
+        success: false,
+        error: existingUserError.message,
+      });
     }
 
     // HASH PASSWORD
-    const hashedPassword =
-      await bcrypt.hash(password, 10)
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // CREATE USER
-    const { data, error } = await supabase
-      .from('users')
+    const { data: user, error } = await supabase
+      .from("users")
       .insert([
         {
           full_name,
           email,
           phone,
+          age: age ? Number(age) : null,
+          blood_group,
+          address,
           role,
-          password: hashedPassword
-        }
+          password: hashedPassword,
+        },
       ])
       .select()
+      .single();
 
     if (error) {
       return res.status(400).json({
         success: false,
-        error: error.message
-      })
+        error: error.message,
+      });
     }
 
-    res.status(201).json({
+    // GENERATE JWT TOKEN
+    const token = jwt.sign(
+      {
+        id: user.id,
+        role: user.role,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
+
+    return res.status(201).json({
       success: true,
-      message: 'User registered',
-      data
-    })
-
+      message: "User registered successfully",
+      token,
+      user,
+    });
   } catch (err) {
-
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      error: err.message
-    })
-
+      error: err.message,
+    });
   }
-
-}
+};
 
 const loginUser = async (req, res) => {
 

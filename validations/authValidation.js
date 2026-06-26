@@ -17,6 +17,32 @@ const registerSchema =
       Joi.string()
         .required(),
 
+    age:
+      Joi.number()
+        .integer()
+        .min(0)
+        .max(120)
+        .required(),
+
+    blood_group:
+      Joi.string()
+        .valid(
+          "A+",
+          "A-",
+          "B+",
+          "B-",
+          "AB+",
+          "AB-",
+          "O+",
+          "O-"
+        )
+        .required(),
+
+    address:
+      Joi.string()
+        .min(3)
+        .required(),
+
     password:
       Joi.string()
         .min(6)
