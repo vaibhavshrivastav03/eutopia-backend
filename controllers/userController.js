@@ -60,11 +60,8 @@ const createUser = async (req, res) => {
 
 }
 
-const updateOnboardingProfile =
-  async (req, res) => {
-
+const updateOnboardingProfile = async (req, res) => {
   try {
-
     const userId = req.user.id;
 
     const {
@@ -73,45 +70,53 @@ const updateOnboardingProfile =
       allergies,
       medical_notes,
       blood_group,
-      age
+      age,
     } = req.body;
 
-    const { data, error } =
-      await supabase
-        .from('users')
-        .update({
-          full_name,
-          profile_photo,
-          allergies,
-          medical_notes,
-          blood_group,
-          age
-        })
-        .eq('id', userId)
-        .select()
-        .single();
+    const updateData = {};
+
+    if (full_name !== undefined)
+      updateData.full_name = full_name;
+
+    if (profile_photo !== undefined)
+      updateData.profile_photo = profile_photo;
+
+    if (allergies !== undefined)
+      updateData.allergies = allergies;
+
+    if (medical_notes !== undefined)
+      updateData.medical_notes = medical_notes;
+
+    if (blood_group !== undefined)
+      updateData.blood_group = blood_group;
+
+    if (age !== undefined)
+      updateData.age = age;
+
+    const { data, error } = await supabase
+      .from("users")
+      .update(updateData)
+      .eq("id", userId)
+      .select()
+      .single();
 
     if (error) {
       return res.status(400).json({
         success: false,
-        error: error.message
+        error: error.message,
       });
     }
 
     return res.json({
       success: true,
-      data
+      data,
     });
-
   } catch (err) {
-
     return res.status(500).json({
       success: false,
-      error: err.message
+      error: err.message,
     });
-
   }
-
 };
 
 const saveEmergencyContacts =

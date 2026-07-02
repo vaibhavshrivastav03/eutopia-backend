@@ -24,17 +24,13 @@ const registerSchema =
         .max(120)
         .required(),
 
-    blood_group:
+    gender:
       Joi.string()
         .valid(
-          "A+",
-          "A-",
-          "B+",
-          "B-",
-          "AB+",
-          "AB-",
-          "O+",
-          "O-"
+          "Male",
+          "Female",
+          "Other",
+          "Prefer not to say"
         )
         .required(),
 

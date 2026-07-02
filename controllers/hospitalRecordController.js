@@ -102,7 +102,48 @@ const getHospitalRecords =
 
   }
 
+  const getAllHospitalRecords =
+  async (req, res) => {
+
+    try {
+
+      const {
+        data,
+        error
+      } = await supabase
+        .from('hospital_records')
+        .select('*')
+        .order('hospital_name', {
+          ascending: true
+        })
+
+      if (error) {
+
+        return res.status(400).json({
+          success: false,
+          error: error.message
+        })
+
+      }
+
+      return res.json({
+        success: true,
+        data
+      })
+
+    } catch (err) {
+
+      return res.status(500).json({
+        success: false,
+        error: err.message
+      })
+
+    }
+
+  }
+
 module.exports = {
   createHospitalRecord,
-  getHospitalRecords
+  getHospitalRecords,
+  getAllHospitalRecords
 }

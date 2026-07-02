@@ -66,6 +66,9 @@ const hospitalIdentificationRoutes =
     './routes/hospitalIdentificationRoutes'
   )
 
+const emergencyRoutes =
+  require("./routes/emergencyRoutes");
+
 // EXPRESS APP
 const app = express()
 
@@ -153,6 +156,11 @@ app.use(
 app.use(
   '/api/hospital-identification',
   hospitalIdentificationRoutes
+)
+
+app.use(
+  "/api/emergency",
+  emergencyRoutes
 )
 // ROOT
 app.get('/', (req, res) => {

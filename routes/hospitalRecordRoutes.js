@@ -6,7 +6,8 @@ const router =
 
 const {
   createHospitalRecord,
-  getHospitalRecords
+  getHospitalRecords,
+  getAllHospitalRecords
 } = require(
   '../controllers/hospitalRecordController'
 )
@@ -34,6 +35,12 @@ router.get(
   authMiddleware,
   ownershipMiddleware,
   getHospitalRecords
+)
+
+// GET ALL HOSPITALS
+router.get(
+  '/all',
+  getAllHospitalRecords
 )
 
 module.exports = router

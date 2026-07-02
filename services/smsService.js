@@ -143,9 +143,61 @@ Medical assistance requested.
 
   }
 
+  const sendMedicalEmergencySMS = async (user_id) => {
+
+  const { data: user } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", user_id)
+    .single();
+
+  const { data: contacts } = await supabase
+    .from("emergency_contacts")
+    .select("*")
+    .eq("user_id", user_id);
+
+  const message = `
+🚨 EUTOPIA MEDICAL ALERT 🚨
+
+Patient:
+${user.full_name}
+
+Blood Group:
+${user.blood_group || "N/A"}
+
+Age:
+${user.age || "N/A"}
+
+Allergies:
+${user.allergies || "None"}
+
+Medical Notes:
+${user.medical_notes || "None"}
+
+Location:
+${user.address || "N/A"}
+
+Please contact the patient immediately.
+
+-EUTOPIA
+`;
+
+  for (const contact of contacts || []) {
+
+    await sendSMS(
+      contact.contact_phone,
+      message
+    );
+
+  }
+
+  return true;
+};
+
 module.exports = {
   sendSMS,
   sendTestSMS,
   sendFireSMS,
-  sendAmbulanceSMS
+  sendAmbulanceSMS,
+  sendMedicalEmergencySMS
 }
